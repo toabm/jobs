@@ -40,7 +40,10 @@ export interface NPMPackage {
   };
 }
 
-
+/**
+ * The result of a package request against `https://registry.npmjs.org/:name/:version`.
+ * This is a subset of the returned data, not a full representation.
+ */
 export interface NPMPackageVersion {
   name: string;
   description?: string;
@@ -50,4 +53,10 @@ export interface NPMPackageVersion {
   };
 }
 
-export type PackageInfo = {name:string, version:string, dependencies: PackageInfo[] | null | string};
+/**
+ * This type will be used to build our dependencies tree.
+ */
+export type PackageInfo = {
+  name:string, version:string,
+  dependencies: PackageInfo[] | null | string
+};

@@ -19,6 +19,7 @@ async function createDepTree(name: string, version: string ) : Promise<PackageIn
 
 /** Get package information from NPM registry */
 async function getPackageInfo(name: string, version: string = ''): Promise<NPMPackageVersion>  {
+  console.log(`Requesting pacakage --> ${name}`)
   try {
     return  got(`https://registry.npmjs.org/${name}/${version}`).json();
   } catch (error) {
@@ -35,6 +36,7 @@ export const getPackage: RequestHandler = async function (req, res, next) {
   try {
     let result:PackageInfo;
     result = await createDepTree(name, version);
+    console.log("Request END: Sending response...");
     return res.status(200).json(result);
   } catch (error) {
     return res.status(400).send("Compruebe el num. de version.");
