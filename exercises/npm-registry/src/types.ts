@@ -50,7 +50,7 @@ export interface NPMPackageVersion {
   version: string;
   dependencies?: {
     [packageName: string]: string;
-  };
+  } | null;
 }
 
 /**

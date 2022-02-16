@@ -90,7 +90,7 @@
       return `<strong>${data.name}  --  ${data.version}</strong>
                 <ol>${ Array.isArray(data.dependencies) && data.dependencies && data.dependencies.length
                       ? data.dependencies.map(dep => `<li>${getHTML(dep)}</li>`).join('')
-                      : ''}</ol>`;
+                      : '' }</ol>`;
     }
 
 
@@ -102,6 +102,7 @@
             .done( response => {
 
                 // Create json-tree
+                $("#resultObject > ul").remove();
                 var tree = jsonTree.create(response, wrapper);
                 $("#expandBtn").off("click").on("click", function() {
                     tree.expand();
