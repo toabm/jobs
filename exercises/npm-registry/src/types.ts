@@ -39,3 +39,15 @@ export interface NPMPackage {
     };
   };
 }
+
+
+export interface NPMPackageVersion {
+  name: string;
+  description?: string;
+  version: string;
+  dependencies?: {
+    [packageName: string]: string;
+  };
+}
+
+export type PackageInfo = {name:string, version:string, dependencies: PackageInfo[] | null | string};

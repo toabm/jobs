@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>NPM Package Dependencies Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"></script>
+
+      <link href="./dist/views/lib/jsonTree/jsonTree.css" rel="stylesheet" />
+      <script src="./dist/views/lib/jsonTree/jsonTree.js"></script>
+</head>
+
+<style>
+
+    h3 {
+        font-size: 1.4rem;
+        margin-top: 0.6rem;
+    }
+    #resultObject, #resultList  {
+        position: relative;
+        display: none;
+        padding: .4rem 1rem;
+        background-color: aquamarine;
+        border-radius: 4px;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    #resultList {
+        background-color: lightcyan;
+    }
+
+    #expandBtn {
+        position: absolute;
+        top: 0.4rem;
+        right: 0.4rem;
+        border: 1px solid #333;
+        background-color: cyan;
+        border-radius: 4px;
+    }
+
+  ol li {
+      margin-top: .4rem;
+      margin-bottom: .4rem;
+  }
+
+  #loader {
+      position: absolute;
+      display: none;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+  }
+</style>
+<body>
+    <div class="container">
+        <h1 class="header">Package Info:</h1>
+        <input id="name" name="name" type="text" placeholder="Name" value="react">
+        <input id="version" name="version" type="text" placeholder="Version Number" value="16.13.0">
+        <button class="btn" onclick="findDepTree()"><i class="material-icons right">arrow_forward</i>Get started!</a>
+    </div>
+
+    <!-- Show dependencies tree as a list -->
+    <section id="resultList" class="container">
+        <h3>List View</h3>
+        <div class="results"></div>
+    </section>
+    <!-- Show dependencies tree as an JS object -->
+    <section id="resultObject" class="container">
+        <button id="expandBtn">EXPAND ALL</button>
+        <h3>Object View</h3>
+    </section>
+
+    <!-- LOADER -->
+    <div id="loader">Loading...</div>
+
+</body>
+<script>
+
+    var wrapper = document.getElementById("resultObject");
+
+    function getHTML(data) {
+
+      return `<strong>${data.name}  --  ${data.version}</strong>
+                <ol>${ Array.isArray(data.dependencies) && data.dependencies && data.dependencies.length
+                      ? data.dependencies.map(dep => `<li>${getHTML(dep)}</li>`).join('')
+                      : ''}</ol>`;
+    }
+
+
+    function findDepTree() {
+        $("#resultObject, #resultList").fadeOut();
+        $("#loader").fadeIn()
+
+        $.getJSON(`/package/${$('#name').val()}/${$('#version').val()}`)
+            .done( response => {
+
+                // Create json-tree
+                var tree = jsonTree.create(response, wrapper);
+                $("#expandBtn").off("click").on("click", function() {
+                    tree.expand();
+                });
+
+                // Expand all (or selected) child nodes of root (optional)
+                // tree.expand(function(node) {
+                //    return node.childNodes.length < 2 || node.label === 'phoneNumbers';
+                // }
+                // Show results as a list.
+                $("#resultList .results").html(getHTML(response));
+
+                $("#resultObject, #resultList").fadeIn();
+            }).fail(() => alert('Could not find package. Please check name and version number.'))
+            .always(() => $("#loader").fadeOut());
+
+    }
+</script>
+</html>
